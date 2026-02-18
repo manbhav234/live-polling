@@ -1,6 +1,9 @@
 {
   "name": "@repo/typescript-config",
   "version": "0.0.0",
+  "exports": {
+    "./base.json": "./base.json"
+  },
   "private": true,
   "license": "MIT",
   "publishConfig": {
