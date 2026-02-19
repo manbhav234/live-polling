@@ -1,6 +1,6 @@
 import { Button } from '@/components/ui/button'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { Field, FieldLabel } from "@/components/ui/field"
 import {
   InputOTP,
@@ -12,22 +12,14 @@ import { handleUserJoinFn } from '@/actions/handleUserJoinFn.functions'
 import { toast } from 'sonner'
 import { useSocketState } from '@/store/socketState'
 import { usePollState } from '@/store/pollState'
-import { useUserState } from '@/store/userState'
 
 export const Route = createFileRoute('/join')({ component: JoinComponent })
 
 
 function JoinComponent() {
-    const socket = useSocketState((state) => state.socket);
-    useEffect(() => {   
-        if (socket){
-            socket.close();
-        }
-    }, [])
 
     const connect = useSocketState((state) => state.connect);
     const joinPoll = usePollState((state) => state.joinPoll);
-    const setUser = useUserState((state) => state.setUser);
     const [userPollId, setUserPollId] = useState<string>("");
     const navigate = useNavigate();
 
@@ -39,7 +31,6 @@ function JoinComponent() {
         }
         await connect();
         joinPoll(userPollId, response.userId!, () => {
-            setUser(userPollId);
             navigate({to: '/poll/$pollId/$userId', params: {pollId: userPollId, userId: response.userId!}})
         })
     }

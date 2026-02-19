@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useForm } from "@tanstack/react-form-start"
 import { XIcon } from "lucide-react"
 import { z } from "zod"
@@ -47,13 +47,6 @@ const formSchema = z.object({
 })
 
 function CreateComponent() {
-  
-  const socket = useSocketState((state) => state.socket);
-  useEffect(() => {
-    if (socket){
-      socket.close();
-    }
-  }, []);
 
   const connect = useSocketState((state) => state.connect);
   const createPoll = usePollState((state) => state.createPoll);
@@ -72,10 +65,11 @@ function CreateComponent() {
     onSubmit: async ({ value }) => {
       setLoading(true);
       await connect();
-      console.log("inside onsubmit")
-      createPoll(value.question, value.options, (adminToken: string) => {
+      createPoll(value.question, value.options, (adminToken: string, pollId: string) => {
         setLoading(false);
-        navigate({to: '/manage/$adminToken', params: {adminToken}})
+        console.log(pollId);
+        console.log(adminToken);
+        navigate({to: '/manage/$pollId/$adminToken', params: {pollId, adminToken}})
       })
     }
   })

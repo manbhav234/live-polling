@@ -1,14 +1,17 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { Button } from '@/components/ui/button'
 import { useSocketState } from '@/store/socketState'
+import { useEffect } from 'react';
 export const Route = createFileRoute('/')({ component: App })
 
 function App() {
 
   const socket = useSocketState((state) => state.socket);
-  if (socket){
-    socket.close();
-  }
+  useEffect(() => {
+    if (socket){
+      socket.close();
+    }
+  }, [])
 
   return (
     <div className="h-full w-full flex justify-center items-center">

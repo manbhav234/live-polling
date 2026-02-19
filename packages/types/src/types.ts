@@ -14,3 +14,10 @@ export type Poll = {
     options: Option[],
     isActive: boolean
 }
+
+export type PollDetails = {
+    pollId: string,
+    question: string,
+    options: {title: string, count: number}[],
+    isActive: boolean
+}

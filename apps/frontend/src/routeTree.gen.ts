@@ -11,9 +11,13 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as JoinRouteImport } from './routes/join'
 import { Route as CreatePollRouteImport } from './routes/create-poll'
+import { Route as PollRouteRouteImport } from './routes/poll/route'
+import { Route as ManageRouteRouteImport } from './routes/manage/route'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as ManageAdminTokenRouteImport } from './routes/manage.$adminToken'
-import { Route as PollPollIdUserIdRouteImport } from './routes/poll.$pollId.$userId'
+import { Route as PollIndexRouteImport } from './routes/poll/index'
+import { Route as ManageIndexRouteImport } from './routes/manage/index'
+import { Route as PollPollIdUserIdRouteImport } from './routes/poll/$pollId.$userId'
+import { Route as ManagePollIdAdminTokenRouteImport } from './routes/manage/$pollId.$adminToken'
 
 const JoinRoute = JoinRouteImport.update({
   id: '/join',
@@ -25,74 +29,114 @@ const CreatePollRoute = CreatePollRouteImport.update({
   path: '/create-poll',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PollRouteRoute = PollRouteRouteImport.update({
+  id: '/poll',
+  path: '/poll',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ManageRouteRoute = ManageRouteRouteImport.update({
+  id: '/manage',
+  path: '/manage',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ManageAdminTokenRoute = ManageAdminTokenRouteImport.update({
-  id: '/manage/$adminToken',
-  path: '/manage/$adminToken',
-  getParentRoute: () => rootRouteImport,
+const PollIndexRoute = PollIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => PollRouteRoute,
+} as any)
+const ManageIndexRoute = ManageIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => ManageRouteRoute,
 } as any)
 const PollPollIdUserIdRoute = PollPollIdUserIdRouteImport.update({
-  id: '/poll/$pollId/$userId',
-  path: '/poll/$pollId/$userId',
-  getParentRoute: () => rootRouteImport,
+  id: '/$pollId/$userId',
+  path: '/$pollId/$userId',
+  getParentRoute: () => PollRouteRoute,
+} as any)
+const ManagePollIdAdminTokenRoute = ManagePollIdAdminTokenRouteImport.update({
+  id: '/$pollId/$adminToken',
+  path: '/$pollId/$adminToken',
+  getParentRoute: () => ManageRouteRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/manage': typeof ManageRouteRouteWithChildren
+  '/poll': typeof PollRouteRouteWithChildren
   '/create-poll': typeof CreatePollRoute
   '/join': typeof JoinRoute
-  '/manage/$adminToken': typeof ManageAdminTokenRoute
+  '/manage/': typeof ManageIndexRoute
+  '/poll/': typeof PollIndexRoute
+  '/manage/$pollId/$adminToken': typeof ManagePollIdAdminTokenRoute
   '/poll/$pollId/$userId': typeof PollPollIdUserIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/create-poll': typeof CreatePollRoute
   '/join': typeof JoinRoute
-  '/manage/$adminToken': typeof ManageAdminTokenRoute
+  '/manage': typeof ManageIndexRoute
+  '/poll': typeof PollIndexRoute
+  '/manage/$pollId/$adminToken': typeof ManagePollIdAdminTokenRoute
   '/poll/$pollId/$userId': typeof PollPollIdUserIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/manage': typeof ManageRouteRouteWithChildren
+  '/poll': typeof PollRouteRouteWithChildren
   '/create-poll': typeof CreatePollRoute
   '/join': typeof JoinRoute
-  '/manage/$adminToken': typeof ManageAdminTokenRoute
+  '/manage/': typeof ManageIndexRoute
+  '/poll/': typeof PollIndexRoute
+  '/manage/$pollId/$adminToken': typeof ManagePollIdAdminTokenRoute
   '/poll/$pollId/$userId': typeof PollPollIdUserIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/manage'
+    | '/poll'
     | '/create-poll'
     | '/join'
-    | '/manage/$adminToken'
+    | '/manage/'
+    | '/poll/'
+    | '/manage/$pollId/$adminToken'
     | '/poll/$pollId/$userId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/create-poll'
     | '/join'
-    | '/manage/$adminToken'
+    | '/manage'
+    | '/poll'
+    | '/manage/$pollId/$adminToken'
     | '/poll/$pollId/$userId'
   id:
     | '__root__'
     | '/'
+    | '/manage'
+    | '/poll'
     | '/create-poll'
     | '/join'
-    | '/manage/$adminToken'
+    | '/manage/'
+    | '/poll/'
+    | '/manage/$pollId/$adminToken'
     | '/poll/$pollId/$userId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  ManageRouteRoute: typeof ManageRouteRouteWithChildren
+  PollRouteRoute: typeof PollRouteRouteWithChildren
   CreatePollRoute: typeof CreatePollRoute
   JoinRoute: typeof JoinRoute
-  ManageAdminTokenRoute: typeof ManageAdminTokenRoute
-  PollPollIdUserIdRoute: typeof PollPollIdUserIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -111,6 +155,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CreatePollRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/poll': {
+      id: '/poll'
+      path: '/poll'
+      fullPath: '/poll'
+      preLoaderRoute: typeof PollRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/manage': {
+      id: '/manage'
+      path: '/manage'
+      fullPath: '/manage'
+      preLoaderRoute: typeof ManageRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -118,29 +176,71 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/manage/$adminToken': {
-      id: '/manage/$adminToken'
-      path: '/manage/$adminToken'
-      fullPath: '/manage/$adminToken'
-      preLoaderRoute: typeof ManageAdminTokenRouteImport
-      parentRoute: typeof rootRouteImport
+    '/poll/': {
+      id: '/poll/'
+      path: '/'
+      fullPath: '/poll/'
+      preLoaderRoute: typeof PollIndexRouteImport
+      parentRoute: typeof PollRouteRoute
+    }
+    '/manage/': {
+      id: '/manage/'
+      path: '/'
+      fullPath: '/manage/'
+      preLoaderRoute: typeof ManageIndexRouteImport
+      parentRoute: typeof ManageRouteRoute
     }
     '/poll/$pollId/$userId': {
       id: '/poll/$pollId/$userId'
-      path: '/poll/$pollId/$userId'
+      path: '/$pollId/$userId'
       fullPath: '/poll/$pollId/$userId'
       preLoaderRoute: typeof PollPollIdUserIdRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof PollRouteRoute
+    }
+    '/manage/$pollId/$adminToken': {
+      id: '/manage/$pollId/$adminToken'
+      path: '/$pollId/$adminToken'
+      fullPath: '/manage/$pollId/$adminToken'
+      preLoaderRoute: typeof ManagePollIdAdminTokenRouteImport
+      parentRoute: typeof ManageRouteRoute
     }
   }
 }
 
+interface ManageRouteRouteChildren {
+  ManageIndexRoute: typeof ManageIndexRoute
+  ManagePollIdAdminTokenRoute: typeof ManagePollIdAdminTokenRoute
+}
+
+const ManageRouteRouteChildren: ManageRouteRouteChildren = {
+  ManageIndexRoute: ManageIndexRoute,
+  ManagePollIdAdminTokenRoute: ManagePollIdAdminTokenRoute,
+}
+
+const ManageRouteRouteWithChildren = ManageRouteRoute._addFileChildren(
+  ManageRouteRouteChildren,
+)
+
+interface PollRouteRouteChildren {
+  PollIndexRoute: typeof PollIndexRoute
+  PollPollIdUserIdRoute: typeof PollPollIdUserIdRoute
+}
+
+const PollRouteRouteChildren: PollRouteRouteChildren = {
+  PollIndexRoute: PollIndexRoute,
+  PollPollIdUserIdRoute: PollPollIdUserIdRoute,
+}
+
+const PollRouteRouteWithChildren = PollRouteRoute._addFileChildren(
+  PollRouteRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  ManageRouteRoute: ManageRouteRouteWithChildren,
+  PollRouteRoute: PollRouteRouteWithChildren,
   CreatePollRoute: CreatePollRoute,
   JoinRoute: JoinRoute,
-  ManageAdminTokenRoute: ManageAdminTokenRoute,
-  PollPollIdUserIdRoute: PollPollIdUserIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

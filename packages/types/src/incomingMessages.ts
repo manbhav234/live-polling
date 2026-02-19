@@ -30,6 +30,13 @@ export const JoinMessage = z.object({
 
 export type JoinMessageType = z.infer<typeof JoinMessage>
 
+export const StartPollMessage = z.object({
+    adminToken: z.uuid(), 
+    pollId: z.string().length(6)
+})
+
+export type StartPollMessageType = z.infer<typeof StartPollMessage>
+
 export const VoteMessage = z.object({
     id: z.uuid(),
     pollId: z.string().length(6),
@@ -38,18 +45,7 @@ export const VoteMessage = z.object({
 
 export type VoteMessageType = z.infer<typeof VoteMessage>
 
-export const FindPollMessage = z.object({
-    pollId: z.string().length(6),
-})
 
-export type FindPollMessageType = z.infer<typeof FindPollMessage>
-
-export const StartPollMessage = z.object({
-    adminToken: z.uuid(), 
-    pollId: z.string().length(6)
-})
-
-export type StartPollMessageType = z.infer<typeof StartPollMessage>
 
 
 export type IncomingMessage = {
@@ -59,14 +55,9 @@ export type IncomingMessage = {
     type: IncomingMessageType.JOIN;
     payload: JoinMessageType
 } | {
-    type: IncomingMessageType.VOTE;
-    payload: VoteMessageType
-} | {
-    type: IncomingMessageType.FIND_POLL;
-    payload: {
-        pollId: string
-    }
-} | {
     type: IncomingMessageType.START_POLL
     payload: StartPollMessageType
+}| {
+    type: IncomingMessageType.VOTE;
+    payload: VoteMessageType
 }

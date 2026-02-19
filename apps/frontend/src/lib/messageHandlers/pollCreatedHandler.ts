@@ -1,13 +1,18 @@
 import { usePollState } from "@/store/pollState";
 import { type CreatedMessageType } from "@repo/types";
+import { queryClient } from "../createQueryClient";
 
 const pollCreatedHandler = (data: CreatedMessageType) => {
-  console.log("inside poll created handler")
-  const setPollCredentials = usePollState.getState().setPollCredentials;
-  setPollCredentials(data.pollId, data.adminToken);
+  queryClient.setQueryData(['adminPollQuery', data.pollId, data.adminToken],  {
+      pollId: data.pollId,
+      adminToken: data.adminToken,
+      question: data.question, 
+      options: data.options,
+      isActive: data.isActive
+  })
   const onSuccess = usePollState.getState().createPollCallback;
   if (onSuccess) {
-    onSuccess(data.adminToken);
+    onSuccess(data.adminToken, data.pollId);
     usePollState.setState({ createPollCallback: null });
   }
 

@@ -11,7 +11,6 @@ const HandleUserJoin = z.object({
 export const handleUserJoinFn = createServerFn().inputValidator((data: unknown) => HandleUserJoin.parse(data)).handler(async ({data}) => {
     const redis = await connectRedis();
     const pollId = data.pollId;
-    console.log("reached inside join handler")
     const pollExists = await redis.exists(`poll:${pollId}`);
 
     if (pollExists){
