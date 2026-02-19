@@ -4,7 +4,6 @@ export enum IncomingMessageType {
     CREATE = "create",
     JOIN = "join",
     VOTE = "vote",
-    FIND_POLL = "find_poll",
     START_POLL = "start"
 }
 
@@ -37,13 +36,13 @@ export const StartPollMessage = z.object({
 
 export type StartPollMessageType = z.infer<typeof StartPollMessage>
 
-export const VoteMessage = z.object({
-    id: z.uuid(),
+export const IncrementVoteMessage = z.object({
+    userId: z.uuid(),
     pollId: z.string().length(6),
-    vote: z.string()
+    option: z.string()
 })
 
-export type VoteMessageType = z.infer<typeof VoteMessage>
+export type IncrementVoteMessageType = z.infer<typeof IncrementVoteMessage>
 
 
 
@@ -59,5 +58,5 @@ export type IncomingMessage = {
     payload: StartPollMessageType
 }| {
     type: IncomingMessageType.VOTE;
-    payload: VoteMessageType
+    payload: IncrementVoteMessageType
 }

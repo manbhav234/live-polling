@@ -3,7 +3,7 @@ import { redirect } from "@tanstack/react-router";
 import { type Option } from "@repo/types";
 import { checkUserTokenFn } from "@/actions/checkUserTokenFn.functions";
 
-interface userDetails {
+export interface userDetails {
     pollId: string, 
     userId: string,
     question: string, 
@@ -15,12 +15,12 @@ export default function userPollQuery(pollId: string, userId: string){
     return queryOptions<userDetails>({
         queryKey: ['userPollQuery', pollId, userId],
         queryFn: async () => {
-            const response = await checkUserTokenFn({data: {pollId, userId}});
-            if (!response.success){
+            try {
+                const response = await checkUserTokenFn({data: {pollId, userId}});
+                return response.responseData
+            }catch(e){
                 throw redirect({to: '/'})
             }
-            return response.responseData
-            
         },
     })
 }

@@ -1,4 +1,4 @@
-import {type CreateMessageType, OutgoingMessageType, type OutgoingMessage, type JoinMessageType, type StartPollMessageType, type Option} from "@repo/types";
+import {type CreateMessageType, OutgoingMessageType, type OutgoingMessage, type JoinMessageType, type StartPollMessageType, type Option, type IncrementVoteMessageType} from "@repo/types";
 import { WebSocket } from "ws";
 
 import client from "./index.js";
@@ -6,6 +6,24 @@ import { getNewPollId } from "./utils/generators.js";
 import crypto from 'crypto';
 
 const connectedSockets = new Map<string, Set<WebSocket>>();
+
+setInterval(() => {
+  connectedSockets.forEach(async (value: Set<WebSocket>, key: string) => {
+    const pollOptions = await client.hGetAll(`votes:${key}`);
+    const options = Object.entries(pollOptions).map(([key, value]) => ({title: key, count: parseInt(value)}))
+    value.forEach((socket: WebSocket) => {
+      const responseMessage: OutgoingMessage = {
+        type: OutgoingMessageType.INC_VOTE,
+        payload: {
+          pollId: key,
+          options: options
+        }
+      }
+      socket.send(JSON.stringify(responseMessage));
+    })
+  })
+}, 400)
+
 
 export const createPoll = async (data: CreateMessageType, socket: WebSocket) => {
   let pollId: string;
@@ -51,9 +69,7 @@ export const createPoll = async (data: CreateMessageType, socket: WebSocket) => 
 export const joinPoll = async (data: JoinMessageType, socket: WebSocket) => {
   console.log("reached join backend handler")
   await client.hSet(`voters:${data.pollId}`, {
-    [data.id]: JSON.stringify({
-      hasVoted: "false"
-    })
+    [data.id]: "false"
   })
 
   const pollSet = connectedSockets.get(`${data.pollId}`);
@@ -102,3 +118,22 @@ export const startPoll = async (data: StartPollMessageType, socket: WebSocket) =
   })
 
 } 
+
+
+export const castVote = async(data: IncrementVoteMessageType, socket: WebSocket) => {
+
+  const response = await Promise.all([client.hIncrBy(`votes:${data.pollId}`, data.option, 1), client.hSet(`voters:${data.pollId}`, data.userId, "true")]);
+  const votingStatus = JSON.parse(await client.hGet(`voters:${data.pollId}`, data.userId) as string);
+
+  const responseMessage: OutgoingMessage = {
+    type: OutgoingMessageType.VOTE_CASTED,
+    payload: {
+        pollId: data.pollId, 
+        userId: data.userId, 
+        hasVoted: votingStatus
+    }
+  } 
+
+  socket.send(JSON.stringify(responseMessage));
+
+}

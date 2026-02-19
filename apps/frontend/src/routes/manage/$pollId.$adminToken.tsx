@@ -34,7 +34,7 @@ function RouteComponent() {
   return (
   <div className='w-full h-full'>
     <PollHeader pollId={data.pollId} question={data.question}/>
-    <DisplayChart isAdmin={true} isActive={data.isActive} options={data.options}/>
+      <DisplayChart data={data} isAdmin={true} token={""} hasVoted={false}/>
     <div className='flex justify-center items-center h-[10%] mx-auto gap-12'>
       {!data.isActive && <Button className='hover:cursor-pointer' onClick={handlePollStart}>
         Start Poll

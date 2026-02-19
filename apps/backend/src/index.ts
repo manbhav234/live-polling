@@ -1,6 +1,6 @@
 import { WebSocketServer } from 'ws';
 import { IncomingMessageType, type IncomingMessage } from '@repo/types';
-import { createPoll, joinPoll, startPoll } from './managePolls.js';
+import { createPoll, joinPoll, startPoll, castVote } from './managePolls.js';
 import { createClient, type RedisClientType } from 'redis';
 
 const client: RedisClientType = createClient({
@@ -27,6 +27,8 @@ wss.on('connection', function connection(socket) {
       case IncomingMessageType.START_POLL:
         startPoll(parsedData.payload, socket);
         break;
+      case IncomingMessageType.VOTE:
+        castVote(parsedData.payload, socket);
     }
   });
 

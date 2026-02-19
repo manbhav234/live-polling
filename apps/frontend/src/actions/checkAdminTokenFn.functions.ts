@@ -18,7 +18,8 @@ export const checkAdminTokenFn = createServerFn().inputValidator((data: unknown)
          const pollId = pollKey.slice(5);
         const pollDetails = Object(await redis.hGetAll(`poll:${pollId}`));
         const question = pollDetails.question;
-        const pollOptions: Option[] = (JSON.parse(pollDetails.options) as {title: string}[]).map((option) => ({...option, count: 0}));
+        const getOptions = await redis.hGetAll(`votes:${pollId}`);
+        const pollOptions = Object.entries(getOptions).map(([key, value]) => ({title: key, count: parseInt(value)}));
         console.log("reaching the final stage")
         return ({
             success: true, 

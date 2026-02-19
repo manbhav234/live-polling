@@ -4,6 +4,7 @@ export enum OutgoingMessageType {
     CREATED = "created",
     POLL_JOINED = "joined",
     POLL_STARTED = "started",
+    VOTE_CASTED = "vote_casted",
     INC_VOTE = "inc_vote",
 }
 
@@ -40,14 +41,19 @@ export const PollStartedMessage = z.object({
 
 export type PollStartedMessageType = z.infer<typeof PollStartedMessage>
 
-
-export const IncrementVoteMessage = z.object({
+export const VoteCasted = z.object({
     pollId: z.string().length(6),
-    optionTitle: z.string(),
-    currentStatus: z.array(z.object({title: z.string(), votes: z.number()}))
+    userId: z.uuid(),
+    hasVoted: z.boolean()
+})
+export type VoteCasted = z.infer<typeof VoteCasted>
+
+export const VotesMessage = z.object({
+    pollId: z.string().length(6),
+    options: z.array(z.object({title: z.string(), count: z.number()}))
 })
 
-export type IncrementVoteMessageType = z.infer<typeof IncrementVoteMessage>
+export type VotesMessageType = z.infer<typeof VotesMessage>
 
 
 export type OutgoingMessage = {
@@ -61,5 +67,8 @@ export type OutgoingMessage = {
     payload: PollStartedMessageType
 }| {
     type: OutgoingMessageType.INC_VOTE;
-    payload: IncrementVoteMessageType
+    payload: VotesMessageType
+} | {
+    type: OutgoingMessageType.VOTE_CASTED;
+    payload: VoteCasted
 }

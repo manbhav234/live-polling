@@ -2,6 +2,8 @@ import { create } from "zustand";
 import pollCreatedHandler from "@/lib/messageHandlers/pollCreatedHandler";
 import pollJoinedHandler from "@/lib/messageHandlers/pollJoinedHandler";
 import pollStartHandler from "@/lib/messageHandlers/pollStartHandler";
+import updateVotesHandler from "@/lib/messageHandlers/updateVotesHandler";
+import voteCastedHandler from "@/lib/messageHandlers/voteCastedHandler";
 
 import {
   type OutgoingMessage,
@@ -55,6 +57,12 @@ export const useSocketState = create<SocketStateType>((set, get) => ({
 
             case OutgoingMessageType.POLL_STARTED:
               pollStartHandler(parsedData.payload)
+              break;
+            case OutgoingMessageType.VOTE_CASTED:
+              voteCastedHandler(parsedData.payload);
+              break;
+            case OutgoingMessageType.INC_VOTE:
+              updateVotesHandler(parsedData.payload)
               break;
           }
         } catch (e) {

@@ -16,7 +16,8 @@ export const checkUserTokenFn = createServerFn().inputValidator((data) => CheckU
     if (findUser){
         const pollDetails = Object(await redis.hGetAll(`poll:${data.pollId}`));
         const question = pollDetails.question;
-        const pollOptions: Option[] = (JSON.parse(pollDetails.options) as {title: string}[]).map((option) => ({...option, count: 0}));
+        const getOptions = await redis.hGetAll(`votes:${data.pollId}`);
+        const pollOptions = Object.entries(getOptions).map(([key, value]) => ({title: key, count: parseInt(value)}));
         return {
             success: true,
             message: "Found the user",
