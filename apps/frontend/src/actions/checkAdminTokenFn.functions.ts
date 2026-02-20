@@ -1,7 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import connectRedis from "./connectRedisServerOnly.functions";
 import {z} from 'zod';
-import {type Option} from '@repo/types'
 
 const CheckAdminType = z.object({
     adminToken: z.uuid()

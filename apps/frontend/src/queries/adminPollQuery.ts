@@ -16,6 +16,7 @@ export default function adminPollQuery(pollId: string, adminToken: string){
         queryKey: ['adminPollQuery', pollId, adminToken],
         queryFn: async () => {
             try {
+                console.log("executing admin query function");
                 const response = await checkAdminTokenFn({data: {pollId, adminToken}});
                 return response.responseData;
             }catch(e){

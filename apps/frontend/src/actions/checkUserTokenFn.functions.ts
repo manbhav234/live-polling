@@ -1,7 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import {z} from 'zod';
 import connectRedis from "./connectRedisServerOnly.functions";
-import {type Option} from '@repo/types'
 
 const CheckUserAndPoll = z.object({
     pollId: z.string().length(6),
